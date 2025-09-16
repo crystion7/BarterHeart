@@ -7,7 +7,7 @@ A safe and supportive community platform for sharing stories, tracking personal 
 
 ---
 
-### [View Live Demo](https://your-live-demo-link.com) ✨
+### [View Live Demo](https://barter-heart.vercel.app/index.html) ✨
 
 
 
