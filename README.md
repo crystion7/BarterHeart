@@ -9,8 +9,7 @@ A safe and supportive community platform for sharing stories, tracking personal 
 
 ### [View Live Demo](https://your-live-demo-link.com) ✨
 
-![BraveHeart Screenshot](https://via.placeholder.com/800x450.png?text=BraveHeart+Application+Screenshot)
-*(Replace the link above with a real screenshot of your project)*
+
 
 ## 📖 About The Project
 
