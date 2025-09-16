@@ -19,7 +19,7 @@
                 <nav>
                     <a href="index.html" class="active">Dashboard</a>
                     <a href="actions.html">Submit Intent</a>
-                    </nav>
+                </nav>
             </div>
         </header>
 
@@ -27,7 +27,7 @@
             <div class="dashboard-grid">
                 <div class="dashboard-column">
                     <div class="widget-card">
-                        <h3>Cause Progress</h3>
+                        <h3>Cause Progress Milestones</h3>
                         <div id="progress-bars"></div>
                     </div>
 
@@ -63,12 +63,21 @@
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="app.js"></script>
     <script>
-        // --- Central State Management & Title Calculation ---
-        const CAUSE_GOALS = { "Community Treasury": 10000, "Environmental Fund": 5000, "Education": 7500 };
+        // --- Central State Management & Goal Definitions ---
+        const MILESTONE_GOALS = [
+            { id: 'env_1', title: 'Fund Environmental Research Paper', target: 500, cause: 'Environmental Fund' },
+            { id: 'edu_1', title: 'Sponsor 10 Student Scholarships', target: 2500, cause: 'Education' },
+            { id: 'com_1', title: 'Upgrade Community Server', target: 1000, cause: 'Community Treasury' },
+            { id: 'env_2', title: 'Organize Local River Cleanup', target: 1500, cause: 'Environmental Fund' },
+            { id: 'edu_2', title: 'Buy 500 Textbooks for Schools', target: 4000, cause: 'Education' },
+            { id: 'com_2', title: 'Host a Developer Workshop', target: 2000, cause: 'Community Treasury' }
+        ];
 
         function getAppState() {
             const defaultState = {
-                intents: [], donationTotals: { "Community Treasury": 0, "Environmental Fund": 0, "Education": 0 }, leaderboard: [],
+                intents: [],
+                donationTotals: {}, // This can start empty
+                leaderboard: [],
                 userProfile: { id: null, alias: null, donatedTo: [], totalDonated: 0, swapsMade: 0, votesCast: 0 }
             };
             return JSON.parse(localStorage.getItem('anomaAppState')) || defaultState;
@@ -85,6 +94,39 @@
         }
 
         // --- UI Display Functions ---
+        function displayProgress() {
+            const container = document.getElementById('progress-bars');
+            const state = getAppState();
+            container.innerHTML = '';
+            
+            // This line is corrected to prevent errors on empty data
+            let remainingFunds = { ...(state.donationTotals || {}) };
+
+            MILESTONE_GOALS.forEach(goal => {
+                const causeTotal = remainingFunds[goal.cause] || 0;
+                let progressOnThisGoal = 0;
+
+                if (causeTotal > 0) {
+                    progressOnThisGoal = Math.min(causeTotal, goal.target);
+                    remainingFunds[goal.cause] -= progressOnThisGoal;
+                }
+
+                const percentage = (progressOnThisGoal / goal.target) * 100;
+                const barHtml = `
+                    <div class="progress-item">
+                        <div class="progress-labels">
+                            <span>${goal.title}</span>
+                            <span>${Math.floor(progressOnThisGoal)} / ${goal.target} Tokens</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: ${percentage}%;"></div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += barHtml;
+            });
+        }
+        
         function displayUserStatus() {
             const container = document.getElementById('user-status');
             const profile = getAppState().userProfile;
@@ -100,12 +142,52 @@
                 </div>
             `;
         }
+
+        function displayLeaderboard() {
+            const container = document.getElementById('leaderboard');
+            const state = getAppState();
+            container.innerHTML = '';
+            if (state.leaderboard.length === 0) {
+                container.innerHTML = '<p class="placeholder">No donations yet!</p>'; return;
+            }
+            const list = document.createElement('ol');
+            const medals = ['🥇', '🥈', '🥉'];
+            state.leaderboard.slice(0, 5).forEach((donor, index) => {
+                const item = document.createElement('li');
+                if (index < 3) item.classList.add(`rank-${index + 1}`);
+                item.innerHTML = `<span>${medals[index] || ''} ${donor.alias}</span> <strong>${donor.totalDonated} Tokens</strong>`;
+                list.appendChild(item);
+            });
+            container.appendChild(list);
+        }
+
+        function displayBadges() {
+            const container = document.getElementById('badges');
+            const donatedTo = getAppState().userProfile.donatedTo || [];
+             const badgesMap = {
+                "Environmental Fund": '🌱 Environment Guardian',
+                "Education": '🎓 Education Ally',
+                "Community Treasury": '🏛️ Community Pillar'
+            };
+            container.innerHTML = '';
+            if (donatedTo.length === 0) {
+                container.innerHTML = '<p class="placeholder">No badges yet.</p>';
+                return;
+            }
+            donatedTo.forEach(cause => {
+                if (badgesMap[cause]) {
+                    const badge = document.createElement('div');
+                    badge.className = 'badge';
+                    badge.textContent = badgesMap[cause];
+                    container.appendChild(badge);
+                }
+            });
+        }
         
         function displayIntents() {
             const container = document.getElementById('intents');
             const state = getAppState();
             container.innerHTML = '';
-
             if (state.intents.length === 0) {
                 container.innerHTML = '<p class="placeholder">No intents submitted yet.</p>';
             } else {
@@ -129,29 +211,21 @@
             }
         }
         
-        function displayLeaderboard() {
-            const container = document.getElementById('leaderboard');
-            const state = getAppState();
-            container.innerHTML = '';
-            if (state.leaderboard.length === 0) {
-                container.innerHTML = '<p class="placeholder">No donations yet!</p>'; return;
+        function clearFeed() {
+            if(confirm('Are you sure you want to clear ALL application data, including your anonymous profile?')){
+                localStorage.removeItem('anomaAppState');
+                runDashboard();
             }
-            const list = document.createElement('ol');
-            const medals = ['🥇', '🥈', '🥉'];
-            state.leaderboard.slice(0, 5).forEach((donor, index) => {
-                const item = document.createElement('li');
-                if (index < 3) item.classList.add(`rank-${index + 1}`);
-                item.innerHTML = `<span>${medals[index] || ''} ${donor.alias}</span> <strong>${donor.totalDonated} Tokens</strong>`;
-                list.appendChild(item);
-            });
-            container.appendChild(list);
+        }
+        
+        function runDashboard() {
+            displayUserStatus();
+            displayProgress();
+            displayLeaderboard();
+            displayBadges();
+            displayIntents();
         }
 
-        // Other display functions and logic...
-        function displayProgress() {/*... as before ...*/}
-        function displayBadges() {/*... as before ...*/}
-        function clearFeed() { if(confirm('Are you sure?')){localStorage.removeItem('anomaAppState'); runDashboard();} }
-        function runDashboard() { displayUserStatus(); displayProgress(); displayLeaderboard(); displayBadges(); displayIntents(); }
         window.onload = runDashboard;
     </script>
 </body>
