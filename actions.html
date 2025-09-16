@@ -16,7 +16,7 @@
             <div class="nav-container">
                 <div class="logo">
                     <img src="anoma_logo.jpg" alt="Anoma Logo">
-                    <h1>BarterHeart</h1>
+                    <h1>Anoma Intent dApp</h1>
                 </div>
                 <nav>
                     <a href="index.html">Dashboard</a>
@@ -46,7 +46,7 @@
                         <option value="Environmental Fund">Environmental Fund</option>
                         <option value="Education">Education</option>
                     </select>
-                     <button onclick="addDonationIntent(this)">Donate Anonymously</button>
+                    <button onclick="addDonationIntent(this)">Donate Anonymously</button>
                 </div>
                 <div class="card interactive-card">
                     <h3>🗳️ Community Voting</h3>
@@ -56,107 +56,156 @@
                         <option value="Fund a new developer grant">Fund a new developer grant</option>
                         <option value="Host a virtual hackathon">Host a virtual hackathon</option>
                     </select>
-                     <button onclick="addVoteIntent(this)">Cast Your Vote</button>
+                    <button onclick="addVoteIntent(this)">Cast Your Vote</button>
                 </div>
             </div>
-            </main>
+        </main>
     </div>
     
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="app.js"></script>
     <script>
-        // --- State Management Logic (as before) ---
-        function getAppState() { /* ... as before ... */ }
-        function saveAppState(state) { /* ... as before ... */ }
+        // --- State Management Logic ---
+        function getAppState() {
+            const defaultState = {
+                intents: [], donationTotals: {}, leaderboard: [],
+                userProfile: { id: null, alias: null, donatedTo: [], totalDonated: 0, swapsMade: 0, votesCast: 0 }
+            };
+            let state = JSON.parse(localStorage.getItem('anomaAppState')) || defaultState;
+            if (!state.userProfile.id) {
+                state.userProfile = {
+                    id: 'user_' + Math.random().toString(36).substr(2, 9),
+                    alias: ["Anonymous Whale", "Anonymous Shrimp", "Anonymous Cat", "Anonymous Explorer"][Math.floor(Math.random() * 4)],
+                    donatedTo: [], totalDonated: 0, swapsMade: 0, votesCast: 0
+                };
+                saveAppState(state);
+            }
+            return state;
+        }
+        function saveAppState(state) { localStorage.setItem('anomaAppState', JSON.stringify(state)); }
 
-        // --- NEW: Toast Notification System ---
+        // --- Toast Notification System ---
         function showToast(message) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = 'toast show';
             toast.textContent = message;
-            
             container.appendChild(toast);
-
             setTimeout(() => {
                 toast.classList.remove('show');
                 toast.classList.add('hide');
                 toast.addEventListener('animationend', () => toast.remove());
-            }, 3000); // Toast stays for 3 seconds
+            }, 3000);
         }
 
-        // --- UPDATED: Main Feature Logic with Animations ---
+        // --- Button Animation ---
         function animateButton(button, originalText) {
             button.disabled = true;
             button.innerHTML = '<span class="spinner"></span>Submitting...';
             button.classList.add('loading');
-
-            // Simulate network delay for better UX
-            setTimeout(() => {
-                button.classList.remove('loading');
-                button.classList.add('success');
-                button.innerHTML = 'Success ✓';
-
+            return new Promise(resolve => {
                 setTimeout(() => {
-                    button.classList.remove('success');
-                    button.innerHTML = originalText;
-                    button.disabled = false;
-                }, 1500); // Show success state for 1.5 seconds
-            }, 600); // 0.6 second simulated delay
+                    button.classList.remove('loading');
+                    button.classList.add('success');
+                    button.innerHTML = 'Success ✓';
+                    setTimeout(() => {
+                        button.classList.remove('success');
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                        resolve();
+                    }, 1500);
+                }, 600);
+            });
         }
 
-        function addSwapIntent(button) {
+        // --- Main Feature Logic (Corrected and Complete) ---
+        async function addSwapIntent(button) {
             const originalText = button.innerHTML;
             const myNFT = document.getElementById('myNFT').value.trim();
             const desiredNFT = document.getElementById('desiredNFT').value.trim();
             if (!myNFT || !desiredNFT) { return alert('Please fill out both NFT fields.'); }
             
-            animateButton(button, originalText);
+            await animateButton(button, originalText);
             
-            setTimeout(() => {
-                let state = getAppState();
-                const matchIndex = state.intents.findIndex(i => i.type === 'swap' && i.myNFT === desiredNFT && i.desiredNFT === myNFT);
-                if (matchIndex > -1) {
-                    state.intents.splice(matchIndex, 1);
-                    state.intents.unshift({ type: 'match', item1: myNFT, item2: desiredNFT });
-                    state.userProfile.swapsMade += 1;
-                    showToast('✨ Match Found & Swap Completed!');
-                } else {
-                    state.intents.unshift({ type: 'swap', myNFT, desiredNFT });
-                    showToast('Swap intent submitted!');
-                }
-                saveAppState(state);
-                document.getElementById('myNFT').value = '';
-                document.getElementById('desiredNFT').value = '';
-                checkSwapPreview();
-            }, 600); // This timeout must match the animation delay
+            let state = getAppState();
+            const matchIndex = state.intents.findIndex(i => i.type === 'swap' && i.myNFT === desiredNFT && i.desiredNFT === myNFT);
+            if (matchIndex > -1) {
+                state.intents.splice(matchIndex, 1);
+                state.intents.unshift({ type: 'match', item1: myNFT, item2: desiredNFT });
+                state.userProfile.swapsMade += 1;
+                showToast('✨ Match Found & Swap Completed!');
+            } else {
+                state.intents.unshift({ type: 'swap', myNFT, desiredNFT });
+                showToast('Swap intent submitted!');
+            }
+            saveAppState(state);
+            document.getElementById('myNFT').value = '';
+            document.getElementById('desiredNFT').value = '';
+            checkSwapPreview();
         }
 
-        function addDonationIntent(button) {
+        async function addDonationIntent(button) {
             const originalText = button.innerHTML;
             const amount = parseFloat(document.getElementById('amount').value);
+            const cause = document.getElementById('cause').value;
             if (!amount || amount <= 0) { return alert('Please enter a valid amount.'); }
 
-            animateButton(button, originalText);
+            await animateButton(button, originalText);
 
-            setTimeout(() => {
-                // All the logic for saving donation data goes here
-                showToast('Donation recorded. Thank you!');
-            }, 600);
+            let state = getAppState();
+            const user = state.userProfile;
+
+            state.intents.unshift({ type: 'donation', amount, cause, donorAlias: user.alias, donorId: user.id });
+            state.donationTotals[cause] = (state.donationTotals[cause] || 0) + amount;
+            if (!user.donatedTo.includes(cause)) { user.donatedTo.push(cause); }
+            user.totalDonated += amount;
+
+            let userOnBoard = state.leaderboard.find(d => d.alias === user.alias);
+            if (userOnBoard) { userOnBoard.totalDonated += amount; } 
+            else { state.leaderboard.push({ alias: user.alias, totalDonated: amount }); }
+            state.leaderboard.sort((a, b) => b.totalDonated - a.totalDonated);
+
+            saveAppState(state);
+            showToast('Donation recorded. Thank you!');
+            document.getElementById('amount').value = '';
         }
 
-        function addVoteIntent(button) {
+        async function addVoteIntent(button) {
             const originalText = button.innerHTML;
-            animateButton(button, originalText);
+            const proposal = document.getElementById('proposal').value;
+            let state = getAppState();
+            const user = state.userProfile;
 
-            setTimeout(() => {
-                 // All the logic for saving vote data goes here
-                showToast('Your vote has been cast!');
-            }, 600);
+            const hasVoted = state.intents.some(i => i.type === 'vote' && i.voterId === user.id && i.proposal === proposal);
+            if (hasVoted) {
+                showToast(`You have already voted for this proposal.`);
+                return; 
+            }
+
+            await animateButton(button, originalText);
+
+            state.intents.unshift({ type: 'vote', proposal, voterAlias: user.alias, voterId: user.id });
+            state.userProfile.votesCast += 1;
+            saveAppState(state);
+            showToast('Your vote has been cast!');
         }
 
-        // --- Helper functions (as before) ---
-        function checkSwapPreview() { /* ... as before ... */ }
+        function checkSwapPreview() {
+            const myNFT = document.getElementById('myNFT').value.trim();
+            const desiredNFT = document.getElementById('desiredNFT').value.trim();
+            const previewEl = document.getElementById('swap-preview');
+            if (!myNFT || !desiredNFT) { previewEl.style.display = 'none'; return; }
+            const state = getAppState();
+            const isMatch = state.intents.some(i => i.type === 'swap' && i.myNFT === desiredNFT && i.desiredNFT === myNFT);
+            if (isMatch) {
+                previewEl.textContent = '🔥 A direct match for this swap is available!';
+                previewEl.style.display = 'block';
+            } else { previewEl.style.display = 'none'; }
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('myNFT').addEventListener('input', checkSwapPreview);
+        document.getElementById('desiredNFT').addEventListener('input', checkSwapPreview);
         window.onload = getAppState;
     </script>
 </body>

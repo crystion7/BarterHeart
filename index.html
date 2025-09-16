@@ -76,7 +76,7 @@
         function getAppState() {
             const defaultState = {
                 intents: [],
-                donationTotals: {}, // This can start empty
+                donationTotals: {},
                 leaderboard: [],
                 userProfile: { id: null, alias: null, donatedTo: [], totalDonated: 0, swapsMade: 0, votesCast: 0 }
             };
@@ -99,7 +99,6 @@
             const state = getAppState();
             container.innerHTML = '';
             
-            // This line is corrected to prevent errors on empty data
             let remainingFunds = { ...(state.donationTotals || {}) };
 
             MILESTONE_GOALS.forEach(goal => {
@@ -226,7 +225,23 @@
             displayIntents();
         }
 
-        window.onload = runDashboard;
+        // --- ROBUST PAGE LOAD & UPDATE LOGIC ---
+
+        // 1. This handles live updates when the dashboard is open in another tab.
+        window.addEventListener('storage', function(event) {
+          if (event.key === 'anomaAppState') {
+            runDashboard();
+          }
+        });
+
+        // 2. This handles updates when navigating back to the page.
+        // It replaces the less reliable 'window.onload'.
+        window.addEventListener('pageshow', function(event) {
+            // event.persisted is true if the page was restored from the back-forward cache.
+            // We want to re-run the dashboard in all cases to ensure data is fresh.
+            runDashboard();
+        });
+
     </script>
 </body>
 </html>
