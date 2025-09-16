@@ -1,131 +1,108 @@
-# BraveHeart 🦁
+# Intent-Centric dApp Prototype
 
-A safe and supportive community platform for sharing stories, tracking personal growth, and finding encouragement.
+<div align="center">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Stars](https://img.shields.io/github/stars/YOUR_USERNAME/BraveHeart?style=social)](https://github.com/YOUR_USERNAME/BraveHeart/stargazers)
+[![Status](https://img.shields.io/badge/Status-Prototype-green)]()
+[![Built with](https://img.shields.io/badge/Built_with-HTML,_CSS,_JS-blue)]()
+
+A dynamic front-end prototype demonstrating the power and flexibility of an intent-centric architecture, inspired by the principles of [Anoma](https://anoma.net/).
+
+</div>
 
 ---
 
-### [View Live Demo](https://barter-heart.vercel.app/index.html) ✨
 
+## 🚀 Core Philosophy
 
+In a traditional blockchain application, users must specify the exact, step-by-step instructions to achieve a goal (an *imperative* approach). This dApp explores an *intent-centric* model, where users simply declare their end goal (a *declarative* approach), and the system finds a way to satisfy it.
 
-## 📖 About The Project
+For example, instead of crafting a complex smart contract call to trade an NFT, a user simply states: *"I want to trade my Shrimper #123 for a CoolCat #77."*
 
-BraveHeart is a web application designed to empower individuals on their mental wellness and personal development journeys. It provides a secure space to journal thoughts, connect with a supportive community, and access curated resources.
+This prototype simulates how such a system would work on the front-end, using the browser's local storage as a shared "mempool" of intents.
 
-We believe that sharing our stories and tracking our progress are powerful steps toward building resilience and a 'brave heart'. This project was built to offer a modern, accessible, and safe tool for anyone looking to invest in their personal well-being.
+## ✨ Features
 
----
+This dApp is built as two main pages: a dashboard for viewing the state of the ecosystem and an actions page for submitting new intents.
 
-## 🚀 Features
+### 📝 Core Intents
 
-* **🔒 Secure User Authentication:** Safe and secure signup and login system using JWT.
-* **✍️ Personal Journal:** A private space for users to write, reflect, and track their thoughts.
-* **💬 Community Forum:** A public feed where users can anonymously share stories and offer support.
-* **🎯 Mood & Habit Tracker:** Simple tools to visualize emotional patterns and build positive habits.
-* **📚 Resource Library:** A curated collection of articles, videos, and links to professional help.
-* **📱 Fully Responsive:** A seamless experience on desktops, tablets, and mobile devices.
+- **🔄 NFT Barter Swaps**: Declare an intent to trade one specific NFT for another.
+- **🤝 Anonymous Donations**: Contribute tokens to broad community causes.
+- **🗳️ Community Voting**: Express non-financial support for various community proposals.
 
----
+### 📊 Interactive Dashboard (`index.html`)
 
-## 🛠️ Built With
+- **Live Intent Feed**: A central feed showing all swaps, donations, and votes as they are submitted.
+- **Automatic Matching**: When two opposing swap intents are submitted (A for B, and B for A), they are automatically resolved into a single "Match Successful" intent.
+- **Milestone Progress Bars**: Tracks progress towards specific, actionable goals (e.g., "Fund Research Paper"). Donations to a cause automatically fund the next available milestone.
+- **Donation Leaderboard**: A leaderboard tracking the top 5 anonymous donors, complete with medal emojis (🥇🥈🥉).
+- **Live Updates**: The dashboard updates in real-time across tabs (`storage` event) and reliably refreshes when navigating with the back button (`pageshow` event).
 
-This project was built using the following technologies:
+### 🎭 Anonymous Identity & Gamification
 
-| Frontend                               | Backend                               | Database                            |
-| -------------------------------------- | ------------------------------------- | ----------------------------------- |
-| ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) | ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) | ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white) |
-| ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white) | ![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white) | Mongoose                             |
-| ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) | JWT (JSON Web Tokens)                 |                                     |
+- **Anonymous Profile**: Each user is assigned a random, persistent alias (e.g., "Anonymous Shrimp") stored locally.
+- **User Levels & Titles**: Your alias earns titles based on your activity (donations, swaps, votes). Progress from an "Anonymous Tadpole" to an "Anonymous Leviathan."
+- **Cause Badges**: Earn badges (e.g., 🌱 Environment Guardian) for contributing to different causes.
+- **Personal Stats**: Your dashboard tracks your total tokens donated, successful swaps, and votes cast.
 
-**Deployment:**
-* Frontend deployed on **Vercel**.
-* Backend deployed on **Render** (or Heroku, AWS, etc.).
+### 🎬 Actions & User Experience (`actions.html`)
 
----
+- **Real-time Swap Preview**: Instantly see if a matching counter-offer already exists as you type.
+- **Animated Submissions**: Buttons provide instant feedback with loading spinners and success states.
+- **Toast Notifications**: All successful submissions are confirmed with a sleek, non-intrusive notification.
 
-## ⚙️ Getting Started
+## 🛠️ Tech Stack
 
-To get a local copy up and running, follow these simple steps.
+This prototype is built entirely with client-side technologies to demonstrate that complex state management can be simulated without a backend.
 
-### Prerequisites
+- **HTML5**
+- **CSS3** (Custom Properties, Flexbox, Grid)
+- **Vanilla JavaScript (ES6+)**
+- **Browser `localStorage`**: Used as the single source of truth for all application state.
+- **[particles.js](https://vincentgarreau.com/particles.js/)**: For the subtle, animated "stardust" background.
 
-You need to have Node.js and npm (or yarn) installed on your machine.
-* `npm`
+## 📁 File Structure
+├── 📄 actions.html       # The page for submitting all intents.
+├── 📄 index.html         # The main dashboard for viewing all data.
+├── 📜 app.js              # Configuration for the particles.js background.
+├── 🎨 styles.css          # All styling for the application.
+├── 🖼️ anoma_logo.jpg       # The application logo.
+├── 🦐 shrimp.png          # Asset for the particle animation.
+├── 🐈 cat.png             # Asset for the particle animation.
+└── 📖 README.md          # This file.
+
+## ⚙️ How to Run Locally
+
+1.  **Clone the repository:**
     ```sh
-    npm install npm@latest -g
+    git clone [https://github.com/crystion7/BarterHeart](https://github.com/crystion7/BarterHeart.git)
     ```
-
-### Installation
-
-1.  **Fork the repository**
-2.  **Clone your forked repository:**
+2.  **Navigate to the directory:**
     ```sh
-    git clone [https://github.com/YOUR_USERNAME/BraveHeart.git](https://github.com/YOUR_USERNAME/BraveHeart.git)
+    cd your-repo-name
     ```
-3.  **Navigate to the project directory:**
+3.  **Run with a local server:**
+    Because the app uses JavaScript to manage state, it's best to run it with a simple local server. If you have Node.js installed, you can use the `serve` package:
     ```sh
-    cd BraveHeart
+    npx serve
     ```
-4.  **Install Backend Dependencies:**
-    ```sh
-    cd server
-    npm install
-    ```
-5.  **Install Frontend Dependencies:**
-    ```sh
-    cd ../client
-    npm install
-    ```
-6.  **Set up Environment Variables:**
-    Create a `.env` file in the `server` directory and add the following variables. You can copy the `.env.example` file.
-    ```env
-    MONGO_URI=your_mongodb_connection_string
-    PORT=8000
-    JWT_SECRET=your_super_secret_key
-    ```
-7.  **Run the Development Servers:**
-    * To run the backend server (from the `server` directory):
-        ```sh
-        npm run dev
-        ```
-    * To run the frontend client (from the `client` directory):
-        ```sh
-        npm run dev
-        ```
+    Then, open your browser and go to the URL provided (e.g., `http://localhost:3000`).
 
-Open [http://localhost:5173](http://localhost:5173) (or whatever port your Vite server is running on) to view it in the browser.
-
----
+    Alternatively, you can simply open `index.html` directly in your web browser.
 
 ## 🤝 Contributing
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+This is a prototype project, but contributions and ideas are welcome!
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+1.  **Fork** the repository.
+2.  Create a new **branch** (`git checkout -b feature/your-feature-name`).
+3.  Make your changes and **commit** them (`git commit -m 'Add some amazing feature'`).
+4.  **Push** to the branch (`git push origin feature/your-feature-name`).
+5.  Open a **Pull Request**.
 
-1.  **Fork the Project**
-2.  **Create your Feature Branch** (`git checkout -b feature/AmazingFeature`)
-3.  **Commit your Changes** (`git commit -m 'Add some AmazingFeature'`)
-4.  **Push to the Branch** (`git push origin feature/AmazingFeature`)
-5.  **Open a Pull Request**
-
-Don't forget to give the project a star! Thanks again!
-
----
+For bugs or feature suggestions, please open an issue on the repository's "Issues" tab.
 
 ## 📜 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
-## 📧 Contact
-
-Nirupan Bhandari - [crystion7@gmail.com]
-
-Project Link: [https://github.com/YOUR_USERNAME/BraveHeart](https://github.com/YOUR_USERNAME/BraveHeart)
-
----
+This project is licensed under the MIT License. See the `LICENSE` file for details.
