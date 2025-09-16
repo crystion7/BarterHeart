@@ -1,4 +1,4 @@
-# Intent-Centric dApp Prototype
+# BarterHeart Prototype
 
 <div align="center">
 
@@ -76,7 +76,7 @@ This prototype is built entirely with client-side technologies to demonstrate th
 
 1.  **Clone the repository:**
     ```sh
-    git clone [https://github.com/crystion7/BarterHeart](https://github.com/crystion7/BarterHeart.git)
+    git clone [https://github.com/crystion7/BarterHeart.git](https://github.com/crystion7/BarterHeart.git)
     ```
 2.  **Navigate to the directory:**
     ```sh
