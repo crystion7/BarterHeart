@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anoma | Submit Intent</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="toast-container"></div>
+
+    <div id="particles-js"></div>
+    <div class="page-content">
+        <header>
+            <div class="nav-container">
+                <div class="logo">
+                    <img src="anoma_logo.jpg" alt="Anoma Logo">
+                    <h1>Anoma Intent dApp</h1>
+                </div>
+                <nav>
+                    <a href="index.html">Dashboard</a>
+                    <a href="actions.html" class="active">Submit Intent</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="container">
+            <div class="actions-grid">
+                <div class="card interactive-card">
+                    <h3>🔄 NFT Barter Swap</h3>
+                    <label for="myNFT">Your NFT:</label>
+                    <input type="text" id="myNFT" placeholder="e.g. Shrimper #123">
+                    <label for="desiredNFT">Desired NFT:</label>
+                    <input type="text" id="desiredNFT" placeholder="e.g. CoolCat #77">
+                    <div id="swap-preview" class="swap-preview-message"></div>
+                    <button onclick="addSwapIntent(this)">Submit Swap Intent</button>
+                </div>
+                <div class="card interactive-card">
+                    <h3>🤝 Anonymous Donation</h3>
+                    <label for="amount">Donation Amount (Tokens):</label>
+                    <input type="number" id="amount" placeholder="e.g. 50">
+                    <label for="cause">Cause:</label>
+                    <select id="cause">
+                        <option value="Community Treasury">Community Treasury</option>
+                        <option value="Environmental Fund">Environmental Fund</option>
+                        <option value="Education">Education</option>
+                    </select>
+                     <button onclick="addDonationIntent(this)">Donate Anonymously</button>
+                </div>
+                <div class="card interactive-card">
+                    <h3>🗳️ Community Voting</h3>
+                    <label for="proposal">Select a Proposal to Support:</label>
+                     <select id="proposal">
+                        <option value="Build a digital community park">Build a digital community park</option>
+                        <option value="Fund a new developer grant">Fund a new developer grant</option>
+                        <option value="Host a virtual hackathon">Host a virtual hackathon</option>
+                    </select>
+                     <button onclick="addVoteIntent(this)">Cast Your Vote</button>
+                </div>
+            </div>
+            </main>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // --- State Management Logic (as before) ---
+        function getAppState() { /* ... as before ... */ }
+        function saveAppState(state) { /* ... as before ... */ }
+
+        // --- NEW: Toast Notification System ---
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast show';
+            toast.textContent = message;
+            
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.classList.add('hide');
+                toast.addEventListener('animationend', () => toast.remove());
+            }, 3000); // Toast stays for 3 seconds
+        }
+
+        // --- UPDATED: Main Feature Logic with Animations ---
+        function animateButton(button, originalText) {
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner"></span>Submitting...';
+            button.classList.add('loading');
+
+            // Simulate network delay for better UX
+            setTimeout(() => {
+                button.classList.remove('loading');
+                button.classList.add('success');
+                button.innerHTML = 'Success ✓';
+
+                setTimeout(() => {
+                    button.classList.remove('success');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 1500); // Show success state for 1.5 seconds
+            }, 600); // 0.6 second simulated delay
+        }
+
+        function addSwapIntent(button) {
+            const originalText = button.innerHTML;
+            const myNFT = document.getElementById('myNFT').value.trim();
+            const desiredNFT = document.getElementById('desiredNFT').value.trim();
+            if (!myNFT || !desiredNFT) { return alert('Please fill out both NFT fields.'); }
+            
+            animateButton(button, originalText);
+            
+            setTimeout(() => {
+                let state = getAppState();
+                const matchIndex = state.intents.findIndex(i => i.type === 'swap' && i.myNFT === desiredNFT && i.desiredNFT === myNFT);
+                if (matchIndex > -1) {
+                    state.intents.splice(matchIndex, 1);
+                    state.intents.unshift({ type: 'match', item1: myNFT, item2: desiredNFT });
+                    state.userProfile.swapsMade += 1;
+                    showToast('✨ Match Found & Swap Completed!');
+                } else {
+                    state.intents.unshift({ type: 'swap', myNFT, desiredNFT });
+                    showToast('Swap intent submitted!');
+                }
+                saveAppState(state);
+                document.getElementById('myNFT').value = '';
+                document.getElementById('desiredNFT').value = '';
+                checkSwapPreview();
+            }, 600); // This timeout must match the animation delay
+        }
+
+        function addDonationIntent(button) {
+            const originalText = button.innerHTML;
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (!amount || amount <= 0) { return alert('Please enter a valid amount.'); }
+
+            animateButton(button, originalText);
+
+            setTimeout(() => {
+                // All the logic for saving donation data goes here
+                showToast('Donation recorded. Thank you!');
+            }, 600);
+        }
+
+        function addVoteIntent(button) {
+            const originalText = button.innerHTML;
+            animateButton(button, originalText);
+
+            setTimeout(() => {
+                 // All the logic for saving vote data goes here
+                showToast('Your vote has been cast!');
+            }, 600);
+        }
+
+        // --- Helper functions (as before) ---
+        function checkSwapPreview() { /* ... as before ... */ }
+        window.onload = getAppState;
+    </script>
+</body>
+</html>

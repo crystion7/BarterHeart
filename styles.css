@@ -1,0 +1,225 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root {
+    --primary-red: #E50914;
+    --dark-bg: #141414;
+    --card-bg: #1F1F1F;
+    --widget-bg: #1F1F1F; /* Adjusted for consistency */
+    --text-primary: #FFFFFF;
+    --text-secondary: #B3B3B3;
+    --border-color: #333333;
+    --success-color: #1a8a61;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--dark-bg);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+#particles-js { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; }
+.page-content { position: relative; z-index: 2; }
+
+/* Header & Nav */
+header { background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(10px); padding: 1rem 5%; position: sticky; top: 0; border-bottom: 1px solid var(--border-color); }
+.nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1400px; margin: 0 auto; }
+.logo { display: flex; align-items: center; gap: 1rem; }
+.logo img { height: 45px; }
+.logo h1 { font-size: 1.5rem; }
+nav a { color: var(--text-secondary); text-decoration: none; padding: 0.5rem 1rem; margin-left: 0.5rem; border-radius: 6px; transition: all 0.3s ease; }
+nav a:hover { color: var(--text-primary); background-color: var(--border-color); }
+nav a.active { color: var(--primary-red); font-weight: 600; }
+
+/* Main Layouts */
+.container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: flex-start; }
+.dashboard-column { display: flex; flex-direction: column; gap: 2rem; }
+.actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
+
+/* Widget & Form Cards */
+.widget-card { background: var(--widget-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; }
+.widget-card h3 { color: var(--primary-red); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; }
+.widget-card.full-height { height: calc(100% - 7rem); } /* Adjusted for better fit */
+.card.interactive-card { background: var(--card-bg); border-radius: 12px; padding: 2rem; border: 1px solid var(--border-color); }
+
+/* Progress Bars */
+.progress-item { margin-bottom: 1rem; }
+.progress-labels { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
+.progress-bar-container { background: var(--dark-bg); border-radius: 20px; height: 12px; overflow: hidden; }
+.progress-bar-fill { background: var(--primary-red); height: 100%; border-radius: 20px; transition: width 0.5s ease-in-out; }
+
+/* Leaderboard */
+#leaderboard ol { list-style: none; padding-left: 0; }
+#leaderboard li { display: flex; justify-content: space-between; padding: 0.75rem 0.5rem; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; }
+#leaderboard li:last-child { border-bottom: none; }
+#leaderboard li strong { color: var(--text-primary); }
+
+/* Badges */
+#badges { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.badge { background: var(--border-color); color: var(--text-primary); padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500; }
+
+/* Live Intent Feed */
+.feed-header { display: flex; justify-content: space-between; align-items: center; }
+.intent-feed-area { max-height: 400px; overflow-y: auto; padding-right: 10px; }
+.intent { padding: 0.8rem; border-bottom: 1px solid var(--border-color); text-align: left; color: var(--text-secondary); font-size: 0.9rem; }
+.intent:last-child { border-bottom: none; }
+.intent span { color: var(--primary-red); font-weight: 600; margin-right: 0.5rem; }
+.intent strong { color: var(--text-primary); }
+.intent.match { background-color: rgba(229, 9, 20, 0.1); border-left: 4px solid var(--primary-red); }
+.intent.vote { border-left: 4px solid #4a90e2; }
+
+/* Swap Match Preview */
+.swap-preview-message { display: none; margin-top: 1rem; padding: 0.75rem; background: rgba(26, 138, 97, 0.2); border: 1px solid var(--success-color); border-radius: 6px; color: #a4f5d7; font-weight: 500; text-align: center; }
+
+/* General Form Elements */
+label { display: block; margin: 1rem 0 0.5rem 0; font-weight: 600; text-align: left; color: var(--text-secondary); }
+input, select { width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--dark-bg); color: var(--text-primary); font-size: 1rem; }
+button { width: 100%; padding: 0.8rem; margin-top: 2rem; border-radius: 6px; border: none; background: var(--primary-red); color: var(--text-primary); font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: all 0.2s ease; }
+button:hover { background: #c40812; transform: scale(1.02); }
+.button-secondary.button-small { padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; margin: 0; background: #333; }
+
+/* Confirmation & Placeholders */
+.confirmation-message { display: none; margin: 2rem auto 0 auto; padding: 1rem; max-width: 1340px; background-color: rgba(26, 138, 97, 0.2); color: #a4f5d7; border-radius: 8px; border: 1px solid var(--success-color); text-align: center; }
+.placeholder { color: var(--text-secondary); text-align: center; padding: 1rem 0; font-style: italic; font-size: 0.9rem; }
+
+/* Responsive Adjustments */
+@media (max-width: 900px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+}
+
+
+/* --- NEW STYLES FOR GAMIFICATION --- */
+
+/* User Status Widget */
+.user-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--primary-red);
+    margin-bottom: 0.5rem;
+}
+.user-alias {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+}
+.user-stats {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+}
+.user-stats span {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+.user-stats strong {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Intent Feed Author */
+.intent-author {
+    color: var(--primary-red);
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+/* Leaderboard Medals */
+.rank-1 { background-color: rgba(255, 215, 0, 0.05); }
+.rank-2 { background-color: rgba(192, 192, 192, 0.05); }
+.rank-3 { background-color: rgba(205, 127, 50, 0.05); }
+/* --- APPEND THESE NEW STYLES TO YOUR EXISTING styles.css FILE --- */
+
+/* Button Animation Styles */
+button.loading, button.success {
+    transform: scale(1.0); /* Prevent hover effect during animation */
+}
+
+button .spinner {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 0.5em;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+button.success {
+    background-color: var(--success-color);
+}
+
+
+/* Toast Notification Styles */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.toast {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
+    margin-bottom: 10px;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.toast.show {
+    visibility: visible;
+    animation: slideInRight 0.4s ease forwards;
+}
+
+.toast.hide {
+    visibility: visible;
+    animation: fadeOut 0.5s ease forwards;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* --- Remove old confirmation message style --- */
+/* You can safely delete this rule if it exists in your CSS */
+.confirmation-message {
+   display: none !important;
+}

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anoma | Intent Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="page-content">
+        <header>
+            <div class="nav-container">
+                <div class="logo">
+                    <img src="anoma_logo.jpg" alt="Anoma Logo">
+                    <h1>Anoma Intent dApp</h1>
+                </div>
+                <nav>
+                    <a href="index.html" class="active">Dashboard</a>
+                    <a href="actions.html">Submit Intent</a>
+                    </nav>
+            </div>
+        </header>
+
+        <main class="container">
+            <div class="dashboard-grid">
+                <div class="dashboard-column">
+                    <div class="widget-card">
+                        <h3>Cause Progress</h3>
+                        <div id="progress-bars"></div>
+                    </div>
+
+                    <div class="widget-card">
+                        <h3>🏆 Top Donors</h3>
+                        <div id="leaderboard"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-column">
+                    <div class="widget-card">
+                        <h3>Your Anonymous Status</h3>
+                        <div id="user-status"></div>
+                    </div>
+
+                     <div class="widget-card">
+                        <h3>Your Badges</h3>
+                        <div id="badges"></div>
+                    </div>
+
+                    <div class="widget-card full-height">
+                        <div class="feed-header">
+                           <h3>📜 Live Intent Feed</h3>
+                           <button onclick="clearFeed()" class="button-secondary button-small">Clear All Data</button>
+                        </div>
+                        <div id="intents" class="intent-feed-area"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // --- Central State Management & Title Calculation ---
+        const CAUSE_GOALS = { "Community Treasury": 10000, "Environmental Fund": 5000, "Education": 7500 };
+
+        function getAppState() {
+            const defaultState = {
+                intents: [], donationTotals: { "Community Treasury": 0, "Environmental Fund": 0, "Education": 0 }, leaderboard: [],
+                userProfile: { id: null, alias: null, donatedTo: [], totalDonated: 0, swapsMade: 0, votesCast: 0 }
+            };
+            return JSON.parse(localStorage.getItem('anomaAppState')) || defaultState;
+        }
+
+        function calculateUserTitle(profile) {
+            const score = (profile.totalDonated / 50) + (profile.swapsMade * 20) + (profile.votesCast * 5);
+            if (score > 1000) return "Anonymous Leviathan";
+            if (score > 500) return "Anonymous Oracle";
+            if (score > 200) return "Anonymous Visionary";
+            if (score > 50) return "Anonymous Contributor";
+            if (score > 10) return "Anonymous Initiate";
+            return "Anonymous Tadpole";
+        }
+
+        // --- UI Display Functions ---
+        function displayUserStatus() {
+            const container = document.getElementById('user-status');
+            const profile = getAppState().userProfile;
+            const title = calculateUserTitle(profile);
+
+            container.innerHTML = `
+                <div class="user-title">${title}</div>
+                <div class="user-alias">Alias: <strong>${profile.alias || 'Not Set'}</strong></div>
+                <div class="user-stats">
+                    <span>Donated: <strong>${profile.totalDonated}</strong> Tokens</span>
+                    <span>Swaps Made: <strong>${profile.swapsMade}</strong></span>
+                    <span>Votes Cast: <strong>${profile.votesCast}</strong></span>
+                </div>
+            `;
+        }
+        
+        function displayIntents() {
+            const container = document.getElementById('intents');
+            const state = getAppState();
+            container.innerHTML = '';
+
+            if (state.intents.length === 0) {
+                container.innerHTML = '<p class="placeholder">No intents submitted yet.</p>';
+            } else {
+                state.intents.forEach(intentData => {
+                    const intent = document.createElement('div');
+                    intent.className = 'intent';
+                    
+                    if (intentData.type === 'swap') {
+                        intent.innerHTML = `<span>SWAP:</span> Trade <strong>${intentData.myNFT}</strong> for <strong>${intentData.desiredNFT}</strong>`;
+                    } else if (intentData.type === 'donation') {
+                        intent.innerHTML = `<span class="intent-author">${intentData.donorAlias}:</span> pledged <strong>${intentData.amount}</strong> tokens to <strong>${intentData.cause}</strong>`;
+                    } else if (intentData.type === 'match') {
+                        intent.classList.add('match');
+                        intent.innerHTML = `<span>✅ MATCH:</span> <strong>${intentData.item1}</strong> swapped for <strong>${intentData.item2}</strong>!`;
+                    } else if (intentData.type === 'vote') {
+                        intent.classList.add('vote');
+                        intent.innerHTML = `<span class="intent-author">${intentData.voterAlias}:</span> supports the proposal: <strong>"${intentData.proposal}"</strong>`;
+                    }
+                    container.appendChild(intent);
+                });
+            }
+        }
+        
+        function displayLeaderboard() {
+            const container = document.getElementById('leaderboard');
+            const state = getAppState();
+            container.innerHTML = '';
+            if (state.leaderboard.length === 0) {
+                container.innerHTML = '<p class="placeholder">No donations yet!</p>'; return;
+            }
+            const list = document.createElement('ol');
+            const medals = ['🥇', '🥈', '🥉'];
+            state.leaderboard.slice(0, 5).forEach((donor, index) => {
+                const item = document.createElement('li');
+                if (index < 3) item.classList.add(`rank-${index + 1}`);
+                item.innerHTML = `<span>${medals[index] || ''} ${donor.alias}</span> <strong>${donor.totalDonated} Tokens</strong>`;
+                list.appendChild(item);
+            });
+            container.appendChild(list);
+        }
+
+        // Other display functions and logic...
+        function displayProgress() {/*... as before ...*/}
+        function displayBadges() {/*... as before ...*/}
+        function clearFeed() { if(confirm('Are you sure?')){localStorage.removeItem('anomaAppState'); runDashboard();} }
+        function runDashboard() { displayUserStatus(); displayProgress(); displayLeaderboard(); displayBadges(); displayIntents(); }
+        window.onload = runDashboard;
+    </script>
+</body>
+</html>
